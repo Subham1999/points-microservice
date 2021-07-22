@@ -1,6 +1,7 @@
 package com.ij026.team3.mfpe.pointsmicroservice.feignclient;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -25,21 +26,27 @@ public interface OfferMicroserviceFeign {
 	public Collection<Offer> getOffers();
 
 	@GetMapping("/offers/{offerId}")
-	public ResponseEntity<?> getOfferDetails(@PathVariable String offerId);
+	public ResponseEntity<Offer> getOfferDetails(@PathVariable String offerId);
 
 	@GetMapping("/offers/search/by-category")
-	public ResponseEntity<?> getOfferDetailsByCategory(@RequestParam(required = true) OfferCategory offerCategory);
+	public ResponseEntity<List<Offer>> getOfferDetailsByCategory(
+			@RequestParam(required = true) OfferCategory offerCategory);
 
 	@GetMapping("/offers/search/by-likes")
-	public ResponseEntity<?> getOfferDetailsByLikes(@RequestParam(required = false, defaultValue = "3") Integer limit,
+	public ResponseEntity<List<Offer>> getOfferDetailsByLikes(
+			@RequestParam(required = false, defaultValue = "3") Integer limit,
 			@RequestParam(required = false) String empId);
 
 	@GetMapping("/offers/search/by-creation-date")
-	public ResponseEntity<?> getOfferDetailsByPostDate(@RequestParam(required = true) String createdOn);
+	public ResponseEntity<List<Offer>> getOfferDetailsByPostDate(@RequestParam(required = true) String createdOn);
 
 	@GetMapping("/offers/search/by-author")
-	public ResponseEntity<?> getOfferDetailsByAuthor(@RequestParam(required = true) String authorId);
+	public ResponseEntity<List<Offer>> getOfferDetailsByAuthor(@RequestParam(required = true) String authorId,
+			@RequestParam(required = false) Boolean open);
 
 	@PostMapping("/offers")
-	public ResponseEntity<Object> addOffer(@Valid @RequestBody Offer newOffer);
+	public ResponseEntity<Boolean> addOffer(@Valid @RequestBody Offer newOffer);
+
+	@PostMapping("/offers/{offerId}/likes")
+	public ResponseEntity<Offer> likeOffer(@PathVariable int offerId, @RequestParam(required = true) String likedBy);
 }
