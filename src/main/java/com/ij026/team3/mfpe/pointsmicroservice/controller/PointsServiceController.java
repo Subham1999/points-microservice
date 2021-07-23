@@ -26,8 +26,5 @@ public class PointsServiceController {
 	public ResponseEntity<Integer> getPointsOfEmployee(@PathVariable String empId) {
 		return ResponseEntity.ok(pointsService.calculatePointsOfEmployee(empId));
 	}
-	/*
-	 * @PostMapping("/refreshPointsOfEmployee") public
-	 */
 
 }
