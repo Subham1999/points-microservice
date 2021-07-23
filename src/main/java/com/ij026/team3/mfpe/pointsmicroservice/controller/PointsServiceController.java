@@ -19,7 +19,7 @@ import com.ij026.team3.mfpe.pointsmicroservice.service.PointsService;
 public class PointsServiceController {
 	@Autowired
 	private PointsService pointsService;
-	
+
 	@Autowired
 	private AuthFeign authFeign;
 	private ConcurrentHashMap<String, Object> empIdCache = new ConcurrentHashMap<>();
@@ -49,24 +49,22 @@ public class PointsServiceController {
 	}
 
 	@GetMapping("/test")
-	public String test(@RequestParam(required = false) Map<String, Object> map) {
-		map.forEach((s, o) -> System.err.println(s + " : " + o));
+	public String test() {
 		return "aaa";
 	}
 
 	@GetMapping("/getPointsOfEmployee/{empId}")
 	public ResponseEntity<Integer> getPointsOfEmployee(@RequestHeader(name = "Authorization") String jwtToken,
 			@PathVariable String empId) {
-		if(isAuthorized(jwtToken)) {
-		if (empIdCache.contains(empId)) {
-			return ResponseEntity.ok(pointsService.calculatePointsOfEmployee(jwtToken,empId));
+		if (isAuthorized(jwtToken)) {
+			if (empIdCache.containsKey(empId)) {
+				return ResponseEntity.ok(pointsService.calculatePointsOfEmployee(jwtToken, empId));
+			} else {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			}
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
-		}
-		 else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-			}
 	}
 
 }
