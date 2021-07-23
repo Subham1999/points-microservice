@@ -11,5 +11,7 @@ public interface GenericPointsMicroservice {
 
 	long countLikesInBetween(LocalDate startDate, LocalDate endDate, List<Like> likes);
 
-	int calculatePointsOfEmployee(String empId);
+	//int calculatePointsOfEmployee(String empId);
+
+	int calculatePointsOfEmployee(String jwtToken, String empId);
 }

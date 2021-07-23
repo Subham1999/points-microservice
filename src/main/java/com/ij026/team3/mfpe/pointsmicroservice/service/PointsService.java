@@ -41,8 +41,8 @@ public class PointsService implements GenericPointsMicroservice {
 	}
 
 	@Override
-	public int calculatePointsOfEmployee(String empId) {
-		ResponseEntity<List<Offer>> offerDetailsByAuthor = offerMicroserviceFeign.getOfferDetailsByAuthor(empId, null);
+	public int calculatePointsOfEmployee(String jwtToken,String empId) {
+		ResponseEntity<List<Offer>> offerDetailsByAuthor = offerMicroserviceFeign.getOfferDetailsByAuthor(jwtToken,empId);
 		List<Offer> offers = offerDetailsByAuthor.getBody();
 		int points = 0;
 		for (Offer o : offers) {

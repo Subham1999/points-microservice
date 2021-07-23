@@ -4,19 +4,24 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ij026.team3.mfpe.pointsmicroservice.exception.NoSuchEmpIdException;
+import com.ij026.team3.mfpe.pointsmicroservice.feignclient.AuthFeign;
 import com.ij026.team3.mfpe.pointsmicroservice.service.PointsService;
 
 @RestController
 public class PointsServiceController {
 	@Autowired
 	private PointsService pointsService;
+	
+	@Autowired
+	private AuthFeign authFeign;
 	private ConcurrentHashMap<String, Object> empIdCache = new ConcurrentHashMap<>();
 
 	public PointsServiceController() {
@@ -27,6 +32,22 @@ public class PointsServiceController {
 		empIdCache.put("ujjw", new Object());
 	}
 
+	private boolean isAuthorized(String jwtToken) {
+		try {
+			ResponseEntity<String> authorizeToken = authFeign.authorizeToken(jwtToken);
+			boolean ok = (authorizeToken.getStatusCodeValue() == 200);
+			if (ok) {
+				System.err.println("Authorized");
+			} else {
+				System.err.println("Not Authorized");
+			}
+			return ok;
+		} catch (Exception e) {
+			System.err.println("Connection failure");
+			return false;
+		}
+	}
+
 	@GetMapping("/test")
 	public String test(@RequestParam(required = false) Map<String, Object> map) {
 		map.forEach((s, o) -> System.err.println(s + " : " + o));
@@ -34,13 +55,18 @@ public class PointsServiceController {
 	}
 
 	@GetMapping("/getPointsOfEmployee/{empId}")
-	public ResponseEntity<Integer> getPointsOfEmployee(@PathVariable String empId) {
-		if(empIdCache.contains(empId)) {
-		return ResponseEntity.ok(pointsService.calculatePointsOfEmployee(empId));
+	public ResponseEntity<Integer> getPointsOfEmployee(@RequestHeader(name = "Authorization") String jwtToken,
+			@PathVariable String empId) {
+		if(isAuthorized(jwtToken)) {
+		if (empIdCache.contains(empId)) {
+			return ResponseEntity.ok(pointsService.calculatePointsOfEmployee(jwtToken,empId));
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
-		else {
-			throw new NoSuchEmpIdException("empid " + empId + " is invalid");
 		}
+		 else {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			}
 	}
 
 }
