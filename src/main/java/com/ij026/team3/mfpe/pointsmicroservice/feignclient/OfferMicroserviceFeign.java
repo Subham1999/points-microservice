@@ -24,18 +24,18 @@ public interface OfferMicroserviceFeign {
 	public String test(@RequestParam(required = false) Map<String, Object> map);
 
 	@GetMapping("/offers")
-	public Collection<Offer> getOffers(@RequestHeader(name = "Authorization") String jwtToken);
+	public ResponseEntity<Collection<Offer>> getOffers(@RequestHeader(name = "Authorization") String jwtToken);
 
 	@GetMapping("/offers/{offerId}")
-	public ResponseEntity<Offer> getOfferDetails(@RequestHeader(name = "Authorization") String jwtToken,@PathVariable String offerId);
+	public ResponseEntity<Offer> getOfferDetails(@RequestHeader(name = "Authorization") String jwtToken,
+			@PathVariable String offerId);
 
 	@GetMapping("/offers/search/by-category")
 	public ResponseEntity<List<Offer>> getOfferDetailsByCategory(@RequestHeader(name = "Authorization") String jwtToken,
 			@RequestParam(required = true) OfferCategory offerCategory);
 
 	@GetMapping("/offers/search/by-likes")
-	public ResponseEntity<List<Offer>> getOfferDetailsByLikes(
-			@RequestHeader(name = "Authorization") String jwtToken,
+	public ResponseEntity<List<Offer>> getOfferDetailsByLikes(@RequestHeader(name = "Authorization") String jwtToken,
 			@RequestParam(required = false, defaultValue = "3") Integer limit,
 			@RequestParam(required = false) String empId);
 
@@ -44,11 +44,14 @@ public interface OfferMicroserviceFeign {
 			@RequestParam(required = true) String createdOn);
 
 	@GetMapping("/offers/search/by-author")
-	public ResponseEntity<List<Offer>> getOfferDetailsByAuthor(@RequestHeader(name = "Authorization") String jwtToken,@RequestParam(required = true) String authorId);
+	public ResponseEntity<List<Offer>> getOfferDetailsByAuthor(@RequestHeader(name = "Authorization") String jwtToken,
+			@RequestParam(required = true) String authorId);
 
 	@PostMapping("/offers")
-	public ResponseEntity<Boolean> addOffer(@RequestHeader(name = "Authorization") String jwtToken,@Valid @RequestBody Offer newOffer);
+	public ResponseEntity<Boolean> addOffer(@RequestHeader(name = "Authorization") String jwtToken,
+			@Valid @RequestBody Offer newOffer);
 
 	@PostMapping("/offers/{offerId}/likes")
-	public ResponseEntity<Offer> likeOffer(@RequestHeader(name = "Authorization") String jwtToken,@PathVariable int offerId, @RequestParam(required = true) String likedBy);
+	public ResponseEntity<Offer> likeOffer(@RequestHeader(name = "Authorization") String jwtToken,
+			@PathVariable int offerId, @RequestParam(required = true) String likedBy);
 }

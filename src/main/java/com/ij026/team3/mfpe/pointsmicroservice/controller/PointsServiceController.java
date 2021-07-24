@@ -1,6 +1,5 @@
 package com.ij026.team3.mfpe.pointsmicroservice.controller;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,17 +8,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ij026.team3.mfpe.pointsmicroservice.feignclient.AuthFeign;
 import com.ij026.team3.mfpe.pointsmicroservice.service.PointsService;
 
+import lombok.extern.log4j.Log4j2;
+
 @RestController
+@Log4j2
 public class PointsServiceController {
 	@Autowired
 	private PointsService pointsService;
-	
+
 	@Autowired
 	private AuthFeign authFeign;
 	private ConcurrentHashMap<String, Object> empIdCache = new ConcurrentHashMap<>();
@@ -49,24 +50,23 @@ public class PointsServiceController {
 	}
 
 	@GetMapping("/test")
-	public String test(@RequestParam(required = false) Map<String, Object> map) {
-		map.forEach((s, o) -> System.err.println(s + " : " + o));
+	public String test() {
 		return "aaa";
 	}
 
 	@GetMapping("/getPointsOfEmployee/{empId}")
 	public ResponseEntity<Integer> getPointsOfEmployee(@RequestHeader(name = "Authorization") String jwtToken,
 			@PathVariable String empId) {
-		if(isAuthorized(jwtToken)) {
-		if (empIdCache.contains(empId)) {
-			return ResponseEntity.ok(pointsService.calculatePointsOfEmployee(jwtToken,empId));
-		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
-		}
-		 else {
+		if (isAuthorized(jwtToken)) {
+			if (empIdCache.containsKey(empId)) {
+				return ResponseEntity.ok(pointsService.calculatePointsOfEmployee(jwtToken, empId));
+			} else {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 			}
+		} else {
+			log.debug("jwtToken invalid");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
 	}
 
 }
