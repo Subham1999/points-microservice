@@ -1,6 +1,5 @@
 package com.ij026.team3.mfpe.pointsmicroservice.controller;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +8,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ij026.team3.mfpe.pointsmicroservice.feignclient.AuthFeign;
 import com.ij026.team3.mfpe.pointsmicroservice.service.PointsService;
 
+import lombok.extern.log4j.Log4j2;
+
 @RestController
+@Log4j2
 public class PointsServiceController {
 	@Autowired
 	private PointsService pointsService;
@@ -63,7 +64,8 @@ public class PointsServiceController {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 			}
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			log.debug("jwtToken invalid");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 	}
 
