@@ -5,6 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -17,6 +20,7 @@ import lombok.extern.log4j.Log4j2;
 
 @RestController
 @Log4j2
+@CrossOrigin
 public class PointsServiceController {
 	@Autowired
 	private PointsService pointsService;
@@ -69,4 +73,9 @@ public class PointsServiceController {
 		}
 	}
 
+	@ExceptionHandler(MissingRequestHeaderException.class)
+	public ResponseEntity<String> handleMissingRequestHeaderException(
+			MissingRequestHeaderException missingRequestHeaderException) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authorization header doesn't exist");
+	}
 }
