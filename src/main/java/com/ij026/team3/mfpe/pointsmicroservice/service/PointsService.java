@@ -3,7 +3,6 @@ package com.ij026.team3.mfpe.pointsmicroservice.service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
-import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,14 +34,27 @@ public class PointsService implements GenericPointsMicroservice {
 
 	@Override
 	public long countLikesInBetween(LocalDate startDate, LocalDate endDate, List<Like> likes) {
-		Predicate<LocalDate> startingFilter = ll -> ll.equals(startDate) || ll.isAfter(startDate);
-		Predicate<LocalDate> endingFilter = ll -> ll.isBefore(endDate);
-		return likes.stream().map(like -> like.getLikedDate()).filter(startingFilter).filter(endingFilter).count();
+		long count = 0l;
+		for (Like like : likes) {
+			LocalDate likedDate = like.getLikedDate();
+			if (likedDate.isAfter(endDate)) {
+				continue;
+			} else if (likedDate.equals(endDate)) {
+				count++;
+			} else if (likedDate.isAfter(startDate)) {
+				count++;
+			} else if (likedDate.equals(startDate)) {
+				count++;
+			}
+		}
+
+		return count;
 	}
 
 	@Override
-	public int calculatePointsOfEmployee(String jwtToken,String empId) {
-		ResponseEntity<List<Offer>> offerDetailsByAuthor = offerMicroserviceFeign.getOfferDetailsByAuthor(jwtToken,empId);
+	public int calculatePointsOfEmployee(String jwtToken, String empId) {
+		ResponseEntity<List<Offer>> offerDetailsByAuthor = offerMicroserviceFeign.getOfferDetailsByAuthor(jwtToken,
+				empId);
 		List<Offer> offers = offerDetailsByAuthor.getBody();
 		int points = 0;
 		for (Offer o : offers) {
