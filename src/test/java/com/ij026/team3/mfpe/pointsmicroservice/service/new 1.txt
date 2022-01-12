@@ -1,0 +1,34 @@
+
+csirt@cognizant.com
+
+
+	-> Callable<Student> callStudent <- but some time later;
+	
+	callStudent <= fetchStudentFromRemoteAPI() [10s]
+	
+	
+	callStudent.call() -> aftre 10s -> Student
+	
+	sgdags/offers/search/by-author?authorId=subsa
+	
+	
+	Authorization : Bearer sslalshdlahsdhlahkldhasldhlasdhlasdhadjasjd
+	
+	header.payload.signature
+	
+	header => Algo, 
+	
+	payload => subject 
+	
+	signature => {...., security_key}
+	
+	sk -> akaka
+	
+	un->subsa, sk
+	
+	256
+	
+	
+	string hash(security_key, user_name, role, Algo) {
+	
+	}
